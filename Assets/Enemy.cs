@@ -6,11 +6,8 @@ public class Enemy : Entity
     bool playerDetected;
     protected override void Update()
     {
-        HandleCollision();
+        base.Update();
         HandleMovement();
-        HandleFlip();
-        HanldeAnimator();
-        HandleAttack();
     }
 
 
@@ -28,7 +25,7 @@ public class Enemy : Entity
 
     protected override void HandleMovement()
     {
-        xInput = Input.GetAxis("Horizontal");
+        //xInput = Input.GetAxis("Horizontal");
         if (canMove)
         {
             rb.velocity = new Vector2(faceDir * moveSpeed, rb.velocity.y);

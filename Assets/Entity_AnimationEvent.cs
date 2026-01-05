@@ -17,11 +17,11 @@ public class Entity_AnimationEvent : MonoBehaviour
     /// </summary>
     private void DisableMove_and_Jump()
     {
-        EntityService.EndableMotion(false);
+        EntityService.EnableMotion(false);
     }
     private void EndableMove_and_Jump()
 
-       => EntityService.EndableMotion(true); // viet kieu lamda expression, neu trong method chi co 1 dong code thi co the viet the nay cho nhanh
+       => EntityService.EnableMotion(true); // viet kieu lamda expression, neu trong method chi co 1 dong code thi co the viet the nay cho nhanh
     public void DamageTarget()
     {
     EntityService.DamageTarget();

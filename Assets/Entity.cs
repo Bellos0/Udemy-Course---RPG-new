@@ -10,20 +10,14 @@ public class Entity : MonoBehaviour
     protected Collider2D col;   // can thiep vao collider cho method die()
     protected SpriteRenderer sr; // tuong tac voi spriterendder de thay doi hieu ung khi nhan damage hoac chet
 
-    protected float xInput;
+   // protected float xInput;
 
 
     [Header("Movement details")]
     [SerializeField] protected float moveSpeed = 1f;
 
     [SerializeField] protected float jumpForce = 1f;
-    protected int faceDir = 1; // face to right
-
-    private bool faceRight = true;
-
-    protected bool canMove = true;
-
-    protected bool canJump = true;
+    
 
     [Header("Health details")]
     [SerializeField] private int maxHealth = 1;
@@ -36,8 +30,15 @@ public class Entity : MonoBehaviour
     [Header("Collsion details")]
     [SerializeField]
     private float groundCheckDistance = 0.2f;
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private LayerMask whatisGround;
+    [SerializeField] protected bool isGrounded;
+    [SerializeField] protected LayerMask whatisGround;
+    protected int faceDir = 1; // face to right
+
+    protected bool faceRight = true;
+
+    protected bool canMove = true;
+
+    //protected bool canJump = true;
     //------------------
     //public Collider2D[] enemyCollider; chuyen vao ben trong ham de tiet kiem bo nho
     [Header("Attack details")]
@@ -73,11 +74,11 @@ public class Entity : MonoBehaviour
     {
 
         HandleCollision();
-        HandleMovement();
         HandleFlip();
         HanldeAnimator();
-        TrytoJump();
         HandleAttack();
+        //HandleMovement();
+       // TrytoJump();
     }
 
     /// <summary>
@@ -110,6 +111,15 @@ public class Entity : MonoBehaviour
             Die();
         }
     }
+    protected virtual void Die()
+    {
+        //throw new NotImplementedException();
+        anim.enabled = false; // tat toan bo animation khi game object chet
+        col.enabled = false; // tat collider de gameobject drop ra ngoai platform
+        rb.gravityScale = 12; // tang khoi luong de drop cho nhanh
+        rb.velocity = new Vector2(rb.velocity.x, 15); // khi chet thi nhay len 1 chut
+        Destroy(gameObject, 2);
+    }
 
 
     /// <summary>
@@ -140,24 +150,14 @@ public class Entity : MonoBehaviour
         sr.material = Orimaterial; // tro ve material ban dau.
     }
 
-    protected virtual void Die()
-    {
-        //throw new NotImplementedException();
-        anim.enabled = false; // tat toan bo animation khi game object chet
-        col.enabled = false; // tat collider de gameobject drop ra ngoai platform
-        rb.gravityScale = 12; // tang khoi luong de drop cho nhanh
-        rb.velocity = new Vector2(rb.velocity.x, 15); // khi chet thi nhay len 1 chut
-
-    }
-
+    
     /// <summary>
     /// ham truyen trung gian de turn on/off chuc nang di chuyen va nhay
     /// </summary>
     /// <param name="endable"></param>
-    public void EndableMotion(bool endable)
+    public virtual void EnableMotion(bool endable)
     {
         canMove = endable;
-        canJump = endable;
     }
 
     protected virtual void HanldeAnimator()
@@ -182,39 +182,30 @@ public class Entity : MonoBehaviour
         anim.SetFloat("xVel", rb.velocity.x);
     }
 
+    /// <summary>
+    /// hang muc nay chi su dung cho player
+    /// nen la se chuyen no sang class player de clean entity
+    /// </summary>
     protected virtual void HandleMovement()
     {
         //xInput = Input.GetAxisRaw("Horizontal"); // thay doi huong nhanh hon, thuc te gia tri xInput khi run chay tu -1,0,1 gia tri la 1 trong 3 gia tri nay. toc do thay doi phuong di chuyen
         //xInput = Input.GetAxis("Horizontal");
         // thay doi huong di chuyen binh thuong, thuc te gia tri xInput khi run chay tu [-1,1] gia tri nam trong doan nay. toc do thay doi phuong di chuyen
-        xInput = Input.GetAxis("Horizontal");
-        if (canMove)
-        {
-            rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
+        //xInput = Input.GetAxis("Horizontal");
+        //if (canMove)
+        //{
+        //    rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
 
-        }
-
-    }
-
-
-
-
-
-
-    void TrytoJump()
-    {
-        if (isGrounded && canJump)
-        {
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                jumpForce = 5;
-                rb.velocity = Vector2.up * jumpForce;
-                // Debug.Log("release shfit");
-
-            }
-        }
+        //}
 
     }
+
+
+
+
+
+
+    
     /// <summary>
     /// kiem tra player da cham dat hay chua.
     /// gia tri groundcheckdistance can phai chinh xac de tranh viec player bi treo khi di chuyen tren cac dia hinh khac nhau
@@ -275,7 +266,8 @@ public class Entity : MonoBehaviour
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -groundCheckDistance)); // ke duong tham chieu xuong duoi de kiem tra dieu kien cua collision
-        Gizmos.DrawWireSphere(attackPoint.position, attackRadius); // ve hinh tron de biet duoc vung tan cong
+        if (attackPoint != null)
+            Gizmos.DrawWireSphere(attackPoint.position, attackRadius); // ve hinh tron de biet duoc vung tan cong
     }
     //private void FixedUpdate()
     //{
